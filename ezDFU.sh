@@ -1,7 +1,11 @@
 # modified by @mosk_i (Matty) to add more automation
 rm -rf bm.plist shsh.shsh ibec.* ibss.*
-nonce=$(./bin/igetnonce | grep "ApNonce=* " -o | cut -c 9-)
+nonce=$(./bin/igetnonce | grep "ApNonce=.*" -o | cut -c 9-)
 echo "Your current ApNonce is $nonce"
+
+#grep ecid
+ecid=$(./bin/igetnonce | grep "ECID=.*" -o | cut -c 6-)
+echo "$ecid"
 
 model=$(./bin/igetnonce | grep "iP.* in" -o | rev | cut -c 4- | rev)
 bconfig=$(./bin/igetnonce | grep "device as .*, " -o | rev | cut -c 3- | rev | cut -c 11-)
