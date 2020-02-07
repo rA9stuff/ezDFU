@@ -1,14 +1,11 @@
+# ezDFU by @BarisUlasCukur (@rA9)
 # modified by @mosk_i (Matty) to add more automation
 rm -rf bm.plist shsh.shsh ibec.* ibss.*
-ret=$(bin/igetnonce 2>/dev/null | grep ECID)
-ecidhex=$(echo $ret | cut -d '=' -f 2 )
-ecidhex2=$(echo $ecidhex | tr '[:lower:]' '[:upper:]')
-echo $ecidhex2 >/dev/null
-ecid=$(echo "obase=10; ibase=16; $ecidhex2" | bc)
+#grep ecid
+ecid=$(./bin/igetnonce | grep "ECID=.*" -o | cut -c 6-)
 echo "Your ECID is $ecid"
 
-ret=$(bin/igetnonce 2>/dev/null | grep ApNonce)
-nonce=$(echo $ret | cut -d '=' -f 2)
+nonce=$(./bin/igetnonce | grep "ApNonce=.*" -o | cut -c 9-)
 echo "Your current ApNonce is $nonce"
 
 model=$(./bin/igetnonce | grep "iP.* in" -o | rev | cut -c 4- | rev)
@@ -33,11 +30,11 @@ echo $ibecdownload
 bin/tsschecker -B $bconfig -d $model -s -e $ecid -m bm.plist --apnonce $nonce
 echo "*SIGNING iBSS*"
 #sign
-mv *.shsh* shsh.shsh
-bin/img4tool -s shsh.shsh -c ibss.signed -p ibss.im4p >/dev/null
+mv *.shsh* ticket.shsh
+bin/img4tool -s ticket.shsh -c ibss.signed -p ibss.im4p >/dev/null
 sleep 0.3
 echo "*SIGNING iBEC*"
-bin/img4tool -s shsh.shsh -c ibec.signed -p ibec.im4p >/dev/null
+bin/img4tool -s ticket.shsh -c ibec.signed -p ibec.im4p >/dev/null
 sleep 0.2
 echo "*SIGNING COMPLETE!*"
 sleep 0.2
@@ -127,4 +124,4 @@ sleep 0.04
 bin/irecovery -c "bgcolor 255 0 255" >/dev/null
 sleep 0.04
 # clean up
-rm -rf bm.plist shsh.shsh ibec.* ibss.*
+rm -rf bm.plist ticket.shsh ibec.* ibss.*
